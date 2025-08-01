@@ -1,0 +1,83 @@
+version: "3.9"
+
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgrest1
+      POSTGRES_PASSWORD: Sebasalejandro22
+      POSTGRES_DB: studentdb
+    ports:
+      - "5432:5432"
+    networks:
+      - backend
+
+  mongo-db:
+    image: mongo:7
+    container_name: mongo-db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo1
+      MONGO_INITDB_ROOT_PASSWORD: Sebasalejandro22
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+
+  register-service:
+    build: ./StudentRegistration/register-service
+    container_name: register-service
+    restart: unless-stopped
+    depends_on:
+      - postgres-db
+      - mongo-db
+    ports:
+      - "8001:8001"
+    networks:
+      - backend
+      - frontend
+
+  attendance-service:
+    build: ./StudentRegistration/attendance-service
+    container_name: attendance-service
+    restart: unless-stopped
+    depends_on:
+      - postgres-db
+      - mongo-db
+    ports:
+      - "8002:8002"
+    networks:
+      - backend
+      - frontend
+
+  report-service:
+    build: ./StudentRegistration/report-service
+    container_name: report-service
+    restart: unless-stopped
+    depends_on:
+      - postgres-db
+      - mongo-db
+    ports:
+      - "8003:8003"
+    networks:
+      - backend
+      - frontend
+
+  nginx-gateway:
+    build: ./nginx
+    container_name: nginx-gateway
+    restart: unless-stopped
+    depends_on:
+      - register-service
+      - attendance-service
+      - report-service
+    ports:
+      - "8080:80"
+    networks:
+      - frontend
+
+networks:
+  backend:
+  frontend:

@@ -1,0 +1,33 @@
+{
+  "name": "Final1 Dev Container",
+  "dockerComposeFile": "../docker-compose.yml",
+  // The service where the workspace will open (can be adjusted)
+  "service": "register-service",
+  // Folder inside the container seen by VS Code
+  "workspaceFolder": "/workspace",
+
+  // Additional features for the devcontainer image
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
+  "postCreateCommand": "pip install --no-cache-dir -r /workspace/StudentRegistration/register-service/requirements.txt",
+
+  // Exposed and auto-forwarded ports
+  "forwardPorts": [5432, 27017, 8001, 8002, 8003, 8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Nginx Gateway",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // User inside the container
+  "remoteUser": "vscode",
+
+  // Do not stop other containers when stopping VS Code
+  "shutdownAction": "none"
+}
